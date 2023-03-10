@@ -41,7 +41,7 @@ def main():
     st.write(f"**Player 1:** {player1} (Elo Rating: {df.loc[player1]['elo']})")
     st.write(f"**Player 2:** {player2} (Elo Rating: {df.loc[player2]['elo']})")
 
-    winner, loser = st.beta_columns(2)
+    winner, loser = st.columns(2)
     with winner:
         if st.button(f"{player1}"):
             # Update the Elo ratings based on the user's choice
