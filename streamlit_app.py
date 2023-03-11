@@ -1,66 +1,47 @@
+import numpy as np
 import streamlit as st
-import pandas as pd
 import random
 
-# Create a dictionary of basketball players with their Elo ratings
-# You can replace these with your own data or use an external API
+# Define our initial player data
 players = {
-    "LeBron James": 2000,
-    "Kobe Bryant": 1900,
-    "Michael Jordan": 2100,
-    "Magic Johnson": 1800,
-    "Larry Bird": 1700,
-    "Shaquille O'Neal": 1600,
-    "Tim Duncan": 1700,
-    "Kevin Durant": 1900,
-    "Stephen Curry": 2000,
-    "Kareem Abdul-Jabbar": 2200
+    "LeBron James": 1000,
+    "Kobe Bryant": 1000,
+    "Michael Jordan": 1000,
+    "Shaquille O'Neal": 1000,
+    "Magic Johnson": 1000
 }
 
-# Create a DataFrame to store the Elo ratings and initialize it with the player dictionary
-df = pd.DataFrame.from_dict(players, orient='index', columns=['elo'])
+# Initialize the Elo rating system
+K = 32  # The K factor determines how much ratings change after each game
+def expected_score(rating1, rating2):
+    return 1 / (1 + 10 ** ((rating2 - rating1) / 400))
+def update_ratings(rating1, rating2, score1, score2):
+    expected1 = expected_score(rating1, rating2)
+    expected2 = expected_score(rating2, rating1)
+    rating1 += K * (score1 - expected1)
+    rating2 += K * (score2 - expected2)
+    return rating1, rating2
 
-# Define the Elo rating calculation function
-def calculate_elo_rating(winner_elo, loser_elo):
-    k_factor = 32
-    expected_win = 1 / (1 + 10**((loser_elo - winner_elo) / 400))
-    actual_win = 1
-    winner_elo = round(winner_elo + k_factor * (actual_win - expected_win))
-    loser_elo = round(loser_elo + k_factor * (expected_win - actual_win))
-    return winner_elo, loser_elo
+# Define our Streamlit app
+def run_app():
+    st.title("NBA Player Comparison")
 
-# Define the main function for the Streamlit app
-def main():
-    st.title("Basketball Player Comparison App")
-    st.write("Compare two random basketball players and update their Elo ratings!")
+    # Ask the user to compare players
+    player1, rating1 = random.choice(list(players.items()))
+    player2, rating2 = random.choice(list(players.items()))
+    st.write(f"Compare {player1} vs {player2}:")
+    choice = st.radio("", (player1, player2))
+    if choice == player1:
+        score1, score2 = 1, 0
+    else:
+        score1, score2 = 0, 1
 
-    # Get two random players to compare
-    player1, player2 = random.sample(list(players.keys()), 2)
+    # Update the Elo ratings and display the current rankings
+    players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
+    sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
+    st.write("Current Rankings:")
+    for i, (player, rating) in enumerate(sorted_players):
+        st.write(f"{i+1}. {player} ({rating:.0f})")
 
-    # Display the players and ask the user to choose the better player
-    st.write(f"**Player 1:** {player1} (Elo Rating: {df.loc[player1]['elo']})")
-    st.write(f"**Player 2:** {player2} (Elo Rating: {df.loc[player2]['elo']})")
-
-    winner, loser = st.columns(2)
-    with winner:
-        if st.button(f"{player1}"):
-            # Update the Elo ratings based on the user's choice
-            winner_elo, loser_elo = calculate_elo_rating(df.loc[player1]['elo'], df.loc[player2]['elo'])
-            df.loc[player1]['elo'] = winner_elo
-            df.loc[player2]['elo'] = loser_elo
-            st.write(f"{player1} wins! New Elo ratings: {player1}: {winner_elo}, {player2}: {loser_elo}")
-
-    with loser:
-        if st.button(f"{player2}"):
-            # Update the Elo ratings based on the user's choice
-            winner_elo, loser_elo = calculate_elo_rating(df.loc[player2]['elo'], df.loc[player1]['elo'])
-            df.loc[player2]['elo'] = winner_elo
-            df.loc[player1]['elo'] = loser_elo
-            st.write(f"{player2} wins! New Elo ratings: {player2}: {winner_elo}, {player1}: {loser_elo}")
-
-    # Display the updated Elo ratings
-    st.write(df.sort_values(by='elo', ascending=False))
-
-
-if __name__ == "__main__":
-    main()
+# Run the app
+run_app()
