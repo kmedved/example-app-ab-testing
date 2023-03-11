@@ -31,12 +31,15 @@ def run_app():
     player2, rating2 = random.choice(list(players.items()))
     st.write(f"Compare {player1} vs {player2}:")
     choice = st.radio("", (player1, player2))
-    if choice == player1:
-        score1, score2 = 1, 0
-        st.write(f'{player1} wins!')
-    else:
-        score1, score2 = 0, 1
-        st.write(f'{player2} wins!')
+
+     # Wait for the user to select an option
+    if choice:
+        if choice == player1:
+            score1, score2 = 1, 0
+            st.write(f'{player1} wins!')
+        else:
+            score1, score2 = 0, 1
+            st.write(f'{player2} wins!')
 
     # Update the Elo ratings and display the current rankings
     players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
