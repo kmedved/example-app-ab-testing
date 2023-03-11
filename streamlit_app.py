@@ -28,25 +28,26 @@ def run_app():
 
     # Ask the user to compare players
     player1, rating1 = random.choice(list(players.items()))
-    player2, rating2 = random.choice(list(players.items()))
+    players_without_player1 = dict(players)
+    del players_without_player1[player1]
+    player2, rating2 = random.choice(list(players_without_player1.items()))
     st.write(f"Compare {player1} vs {player2}:")
     choice = st.radio("", (player1, player2))
 
-     # Wait for the user to select an option
-    if choice:
+    # Wait for the user to select an option
+    if st.button("Submit"):
         if choice == player1:
             score1, score2 = 1, 0
-            st.write(f'{player1} wins!')
         else:
             score1, score2 = 0, 1
-            st.write(f'{player2} wins!')
 
-    # Update the Elo ratings and display the current rankings
-    players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
-    sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
-    st.write("Current Rankings:")
-    for i, (player, rating) in enumerate(sorted_players):
-        st.write(f"{i+1}. {player} ({rating:.0f})")
+        # Update the Elo ratings and display the current rankings
+        players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
+        st.write(f"You selected {choice}.")
+        sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
+        st.write("Current Rankings:")
+        for i, (player, rating) in enumerate(sorted_players):
+            st.write(f"{i+1}. {player} ({rating:.0f})")
 
 # Run the app
 run_app()
