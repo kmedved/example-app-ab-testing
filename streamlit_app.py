@@ -33,13 +33,12 @@ def run_app():
     player2, rating2 = random.choice(list(players_without_player1.items()))
     st.write(f"Compare {player1} vs {player2}:")
     choice = None
-    if st.radio("", (player1, player2)) == player1:
-        choice = player1
-    else:
-        choice = player2
 
-    # Wait for the user to select an option
-    if st.button("Submit"):
+    # Wait for the user to select an option and submit
+    if st.radio("", (player1, player2)):
+        choice = st.radio("", (player1, player2))
+
+    if st.button("Submit") and choice is not None:
         if choice == player1:
             score1, score2 = 1, 0
         else:
