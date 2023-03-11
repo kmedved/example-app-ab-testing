@@ -25,10 +25,11 @@ def update_ratings(rating1, rating2, score1, score2):
 def run_app():
     st.title("Fruit Selection")
 
-    option = st.selectbox("Select a fruit", ["Apple", "Orange"])
+    if st.button("Apple"):
+        st.write("You selected Apple")
 
-    if option:
-        st.write(f"You selected {option}")
+    if st.button("Orange"):
+        st.write("You selected Orange")
 
 # Run the app
 run_app()
