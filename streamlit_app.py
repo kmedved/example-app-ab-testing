@@ -35,8 +35,11 @@ def run_app():
     choice = None
 
     # Wait for the user to select an option and submit
-    if st.radio("", (player1, player2)):
-        choice = st.radio("", (player1, player2))
+    if st.button("Select player 1"):
+        choice = player1
+
+    if st.button("Select player 2"):
+        choice = player2
 
     if st.button("Submit") and choice is not None:
         if choice == player1:
@@ -51,6 +54,6 @@ def run_app():
         st.write("Current Rankings:")
         for i, (player, rating) in enumerate(sorted_players):
             st.write(f"{i+1}. {player} ({rating:.0f})")
-
+            
 # Run the app
 run_app()
