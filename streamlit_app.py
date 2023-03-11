@@ -22,6 +22,9 @@ def update_ratings(rating1, rating2, score1, score2):
     rating2 += K * (score2 - expected2)
     return rating1, rating2
 
+import streamlit as st
+import random
+
 # Define our Streamlit app
 def run_app():
     st.title("NBA Player Comparison")
@@ -35,25 +38,26 @@ def run_app():
     choice = None
 
     # Wait for the user to select an option and submit
-    if st.button("Select player 1"):
+    if st.button(f"Select {player1}"):
         choice = player1
 
-    if st.button("Select player 2"):
+    if st.button(f"Select {player2}"):
         choice = player2
 
-    if st.button("Submit") and choice is not None:
-        if choice == player1:
-            score1, score2 = 1, 0
-        else:
-            score1, score2 = 0, 1
+    if choice is not None:
+        if st.button("Submit"):
+            if choice == player1:
+                score1, score2 = 1, 0
+            else:
+                score1, score2 = 0, 1
 
-        # Update the Elo ratings and display the current rankings
-        players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
-        st.write(f"You selected {choice}.")
-        sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
-        st.write("Current Rankings:")
-        for i, (player, rating) in enumerate(sorted_players):
-            st.write(f"{i+1}. {player} ({rating:.0f})")
-            
+            # Update the Elo ratings and display the current rankings
+            players[player1], players[player2] = update_ratings(rating1, rating2, score1, score2)
+            st.write(f"You selected {choice}.")
+            sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
+            st.write("Current Rankings:")
+            for i, (player, rating) in enumerate(sorted_players):
+                st.write(f"{i+1}. {player} ({rating:.0f})")
+
 # Run the app
 run_app()
