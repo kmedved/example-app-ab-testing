@@ -1,35 +1,40 @@
-import numpy as np
 import streamlit as st
-import random
+import pandas as pd
 
-# Define our initial player data
-players = {
-    "LeBron James": 1000,
-    "Kobe Bryant": 1000,
-    "Michael Jordan": 1000,
-    "Shaquille O'Neal": 1000,
-    "Magic Johnson": 1000
-}
+def update_elo_ratings(rating1, rating2, result, k_factor=32):
+    prob1 = 1 / (1 + 10**((rating2 - rating1) / 400))
+    prob2 = 1 / (1 + 10**((rating1 - rating2) / 400))
 
-# Initialize the Elo rating system
-K = 32  # The K factor determines how much ratings change after each game
-def expected_score(rating1, rating2):
-    return 1 / (1 + 10 ** ((rating2 - rating1) / 400))
-def update_ratings(rating1, rating2, score1, score2):
-    expected1 = expected_score(rating1, rating2)
-    expected2 = expected_score(rating2, rating1)
-    rating1 += K * (score1 - expected1)
-    rating2 += K * (score2 - expected2)
-    return rating1, rating2
+    new_rating1 = rating1 + k_factor * (result - prob1)
+    new_rating2 = rating2 + k_factor * ((1 - result) - prob2)
+    
+    return new_rating1, new_rating2
 
-def run_app():
-    st.title("Fruit Selection")
+def main():
+    st.title("NBA Players Elo Comparison")
 
-    if st.button("Apple"):
-        st.write("You selected Apple")
+    # Replace this with your own NBA players data
+    data = {
+        'Player': ['LeBron James', 'Stephen Curry', 'Kevin Durant', 'James Harden', 'Russell Westbrook'],
+        'Elo': [2500, 2400, 2300, 2200, 2100]
+    }
 
-    if st.button("Orange"):
-        st.write("You selected Orange")
+    df = pd.DataFrame(data)
+    
+    player1 = st.selectbox('Select Player 1:', df['Player'])
+    player2 = st.selectbox('Select Player 2:', df['Player'][df['Player'] != player1])
 
-# Run the app
-run_app()
+    p1_elo, p2_elo = df[df['Player'] == player1]['Elo'].values[0], df[df['Player'] == player2]['Elo'].values[0]
+
+    if st.button('Compare Players'):
+        result = 1 if p1_elo > p2_elo else 0
+        new_p1_elo, new_p2_elo = update_elo_ratings(p1_elo, p2_elo, result)
+
+        st.write(f"**{player1}** Elo: {p1_elo:.0f} -> {new_p1_elo:.0f}")
+        st.write(f"**{player2}** Elo: {p2_elo:.0f} -> {new_p2_elo:.0f}")
+    
+        winner = player1 if result == 1 else player2
+        st.write(f"**{winner}** is the better player according to the Elo ratings.")
+
+if __name__ == "__main__":
+    main()
