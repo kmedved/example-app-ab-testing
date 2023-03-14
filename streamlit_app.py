@@ -48,6 +48,12 @@ def main():
         st.write(f"**{winner}** is the better player according to the Elo ratings.")
         
         session_state.player1, session_state.player2 = select_new_players(df)
+        session_state.new_p1_elo, session_state.new_p2_elo = new_p1_elo, new_p2_elo
+
+    if "new_p1_elo" in session_state and "new_p2_elo" in session_state:
+        st.write("**Updated Elo ratings:**")
+        st.write(f"**{session_state.player1}** Elo: {session_state.new_p1_elo:.0f}")
+        st.write(f"**{session_state.player2}** Elo: {session_state.new_p2_elo:.0f}")
 
 if __name__ == "__main__":
     main()
