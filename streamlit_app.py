@@ -20,14 +20,17 @@ def main():
     }
 
     df = pd.DataFrame(data)
-    
-    player1 = st.selectbox('Select Player 1:', df['Player'])
-    player2 = st.selectbox('Select Player 2:', df['Player'][df['Player'] != player1])
 
-    p1_elo, p2_elo = df[df['Player'] == player1]['Elo'].values[0], df[df['Player'] == player2]['Elo'].values[0]
+    player1, player2 = random.sample(df['Player'].tolist(), 2)
 
-    if st.button('Compare Players'):
-        result = 1 if p1_elo > p2_elo else 0
+    st.write(f"**Player 1:** {player1}")
+    st.write(f"**Player 2:** {player2}")
+
+    choice = st.radio("Who is the better player?", (player1, player2))
+
+    if st.button('Submit'):
+        result = 1 if choice == player1 else 0
+        p1_elo, p2_elo = df[df['Player'] == player1]['Elo'].values[0], df[df['Player'] == player2]['Elo'].values[0]
         new_p1_elo, new_p2_elo = update_elo_ratings(p1_elo, p2_elo, result)
 
         st.write(f"**{player1}** Elo: {p1_elo:.0f} -> {new_p1_elo:.0f}")
