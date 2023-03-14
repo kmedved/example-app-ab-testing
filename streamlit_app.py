@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import random
 
 def update_elo_ratings(rating1, rating2, result, k_factor=32):
     prob1 = 1 / (1 + 10**((rating2 - rating1) / 400))
